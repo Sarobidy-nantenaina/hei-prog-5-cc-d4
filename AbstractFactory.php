@@ -57,16 +57,20 @@ interface ToyFactory {
     }
  }
 
-abstract class AbstractToyFactory {
-    public static function makeToy(ToyFactory $factory, string $type) : Toy {
-        if ('child' === $type) {
-            return $factory->makeForChild();
-        }
-
-        return $factory->makeForKids();
+ abstract class AbstractToyFactory {
+    public static function makeToy(ToyFactory $factory, string $ageGroup): Toy {
+        return match ($ageGroup) {
+            'child' => $factory->makeForChild(),
+            'kid' => $factory->makeForKids(),
+            default => throw new InvalidArgumentException("Invalid age group: $ageGroup"),
+        };
     }
 }
 
-$myToy = AbstractToyFactory::makeToy(new CarFactory(), "child");
-var_dump($myToy);die();
-$myToy.play();
+$toy1 = AbstractToyFactory::makeToy(new CarFactory(), 'child');
+echo $toy1->play(); // Output: Playing with a little car!
+
+echo "\n";
+
+$toy2 = AbstractToyFactory::makeToy(new DollFactory(), 'kid');
+echo $toy2->play();
